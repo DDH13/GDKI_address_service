@@ -1,0 +1,8 @@
+[package]
+org = "dineth"
+name = "GDKI_address_service"
+version = "0.1.0"
+distribution = "2201.8.3"
+
+[build-options]
+observabilityIncluded = true
