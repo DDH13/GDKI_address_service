@@ -5,7 +5,7 @@ public type NewAddressRequest record {
     string gramaDivision;
 };
 
-public type UpdateStatusRequest record {J
+public type UpdateStatusRequest record {
     string grama_nic;
     string request_id;
     string status;
