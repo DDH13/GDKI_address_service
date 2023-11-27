@@ -8,6 +8,7 @@ public type AddressRequest record {|
     time:Date applied_date;
     string approved_by;
     GramaDivision gramaDivision;
+    string status;
 |};
 
 public type GramaDivision record {|
