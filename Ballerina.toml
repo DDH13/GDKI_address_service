@@ -6,3 +6,13 @@ distribution = "2201.8.3"
 
 [build-options]
 observabilityIncluded = true
+
+[persist]
+datastore = "mysql"
+module = "GDKI_address_service"
+
+[[platform.java17.dependency]]
+groupId = "io.ballerina.stdlib"
+artifactId = "persist.sql-native"
+version = "1.2.0"
+
