@@ -5,7 +5,7 @@ public type AddressRequest record {|
     readonly string id;
     string address;
     string NIC;
-    time:Date applied_date;
+    time:Utc applied_date;
     string approved_by;
     GramaDivision gramaDivision;
     string status;

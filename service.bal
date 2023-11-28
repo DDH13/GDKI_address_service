@@ -17,7 +17,7 @@ isolated function addRequest(NewAddressRequest newrequest) returns AddressReques
         address: newrequest.address,
         NIC: newrequest.NIC,
         gramadivisionId: newrequest.gramaDivision,
-        applied_date: time:utcToCivil(time:utcNow()),
+        applied_date: time:utcNow(),
         status: "Pending",
         approved_by: ""
         };
@@ -119,19 +119,17 @@ isolated function checkAddressRequestIsValid(AddressRequest request) returns boo
     if (request.status == "Rejected" || request.status == "Pending") {
         return false;
     }
-    time:Date applied_date = request.applied_date;
-    boolean valid_date = check checkDateIsLessThanSixMonthsFromNow(<time:Civil>applied_date);
+    boolean valid_date = check checkDateIsLessThanSixMonthsFromNow(request.applied_date);
     if (!valid_date) {
         return false;
     }
     return true;
 }
 
-isolated function checkDateIsLessThanSixMonthsFromNow(time:Civil date) returns boolean|error {
-    time:Utc utc_date = check time:utcFromCivil(date);
+isolated function checkDateIsLessThanSixMonthsFromNow(time:Utc date) returns boolean|error {
     time:Utc now = time:utcNow();
     time:Utc six_months_ago = time:utcAddSeconds(now, -15768000);
-    if (utc_date<six_months_ago) {
+    if (date<six_months_ago) {
         return false;
     }
     return true;
@@ -151,7 +149,6 @@ isolated function checkCitizenHasValidAddressRequests(string nic) returns boolea
     return false;
 }
 isolated function checkCitizenHasValidIdentityRequests(string nic) returns boolean|error{
-    // string identity_url = "http://localhost:8081";
     string url = identity_url + "/identity/requests/validate/" + nic;
     http:Client NewClient = check new(url);
     boolean |error response = check NewClient->/.get();
@@ -160,12 +157,6 @@ isolated function checkCitizenHasValidIdentityRequests(string nic) returns boole
     }
     return response;
 
-        // http:Client albumClient = check new ("localhost:9090");
-
-    // Sends a `GET` request to the "/albums" resource.
-    // The verb is not mandatory as it is default to "GET".
-    // Album[] albums = check albumClient->/albums;
-    // io:println("GET request:" + albums.toJsonString());
 
 }
 
