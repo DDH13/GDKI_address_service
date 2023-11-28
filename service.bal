@@ -3,6 +3,7 @@ import ballerina/time;
 import ballerina/uuid;
 import ballerinax/mysql.driver as _;
 import ballerina/persist;
+import ballerina/http;
 
 isolated function addRequest(NewAddressRequest newrequest) returns AddressRequest|error {
     //check if gramasevaka division exists
@@ -149,6 +150,25 @@ isolated function checkCitizenHasValidAddressRequests(string nic) returns boolea
     }
     return false;
 }
+isolated function checkCitizenHasValidIdentityRequests(string nic) returns boolean|error{
+    // string identity_url = "http://localhost:8081";
+    string url = identity_url + "/identity/requests/validate/" + nic;
+    http:Client NewClient = check new(url);
+    boolean |error response = check NewClient->/.get();
+    if (response is error) {
+        return false;
+    }
+    return response;
+
+        // http:Client albumClient = check new ("localhost:9090");
+
+    // Sends a `GET` request to the "/albums" resource.
+    // The verb is not mandatory as it is default to "GET".
+    // Album[] albums = check albumClient->/albums;
+    // io:println("GET request:" + albums.toJsonString());
+
+}
+
 
 isolated function getGramaDivision(string id) returns GramaDivision|error {
     GramaDivision|error grama_division = dbclient->/gramadivisions/[id];
@@ -175,5 +195,5 @@ function initializeDbClient() returns Client|error {
 }
 
 final Client dbclient = check initializeDbClient();
-
+configurable string identity_url = ?;
 

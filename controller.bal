@@ -1,4 +1,5 @@
 import ballerina/http;
+import ballerina/io;
 public type NewAddressRequest record {
     string address;
     string NIC;
@@ -75,5 +76,9 @@ service /address on new http:Listener(8082){
 
     isolated resource function get divisions() returns GramaDivision[]|error {
         return getGramaDivisions();
+    }
+    isolated resource function get test/[string nic]() returns boolean|error {
+        io:println("nic: " + nic);
+        return checkCitizenHasValidAddressRequests(nic);
     }
 }
