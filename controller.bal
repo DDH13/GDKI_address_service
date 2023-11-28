@@ -49,6 +49,10 @@ service /address on new http:Listener(8082){
         return addRequest(request);
     }
 
+    isolated resource function get requests/validate/[string nic]() returns boolean|error {
+        return checkCitizenHasValidAddressRequests(nic);
+    }
+
     isolated resource function put requests(UpdateStatusRequest request) returns ()|error {
         error? changeRequestStatusResult = changeRequestStatus(request.request_id, request.status, request.grama_nic);
         if changeRequestStatusResult is error {

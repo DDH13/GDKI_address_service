@@ -114,15 +114,40 @@ isolated function getRequestsByNIC(string nic) returns AddressRequest[]|error {
     }
 }
 
-isolated function checkRequestIsValid(AddressRequest request) returns boolean|error {
-    time:Utc applied_date = check time:utcFromCivil(<time:Civil>request.applied_date);
-    time:Utc now = time:utcNow();
-    time:Utc six_months_ago = time:utcAddSeconds(now, -15768000);
-    //check if difference between applied date and now is less than 6 months
-    if (applied_date<six_months_ago) {
+isolated function checkAddressRequestIsValid(AddressRequest request) returns boolean|error {
+    if (request.status == "Rejected" || request.status == "Pending") {
+        return false;
+    }
+    time:Date applied_date = request.applied_date;
+    boolean valid_date = check checkDateIsLessThanSixMonthsFromNow(<time:Civil>applied_date);
+    if (!valid_date) {
         return false;
     }
     return true;
+}
+
+isolated function checkDateIsLessThanSixMonthsFromNow(time:Civil date) returns boolean|error {
+    time:Utc utc_date = check time:utcFromCivil(date);
+    time:Utc now = time:utcNow();
+    time:Utc six_months_ago = time:utcAddSeconds(now, -15768000);
+    if (utc_date<six_months_ago) {
+        return false;
+    }
+    return true;
+}
+
+isolated function checkCitizenHasValidAddressRequests(string nic) returns boolean|error {
+    AddressRequest[]|error requests = getRequestsByNIC(nic);
+    if (requests is error) {
+        return false;
+    }
+    foreach var request in requests {
+        boolean valid =check checkAddressRequestIsValid(request);
+        if (valid) {
+            return true;
+        }
+    }
+    return false;
 }
 
 isolated function getGramaDivision(string id) returns GramaDivision|error {
