@@ -1,0 +1,257 @@
+openapi: 3.0.1
+info:
+  title: Address
+  version: 0.1.0
+servers:
+- url: "{server}:{port}/address"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "8082"
+paths:
+  /requests:
+    get:
+      operationId: getRequests
+      parameters:
+      - name: gdid
+        in: query
+        schema:
+          type: string
+          default: ""
+      - name: status
+        in: query
+        schema:
+          type: string
+          default: ""
+      - name: rlimit
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressRequest'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postRequests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAddressRequest'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressRequest'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /requests/{id}:
+    get:
+      operationId: getRequestsId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressRequest'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /requests/validate/{nic}:
+    get:
+      operationId: getRequestsValidateNic
+      parameters:
+      - name: nic
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: boolean
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /divisions:
+    get:
+      operationId: getDivisions
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GramaDivision'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /test/{nic}:
+    get:
+      operationId: getTestNic
+      parameters:
+      - name: nic
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: boolean
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+components:
+  schemas:
+    ErrorPayload:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason phrase
+        path:
+          type: string
+          description: Request path
+        method:
+          type: string
+          description: Method type of the request
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          description: Timestamp of the error
+        status:
+          type: integer
+          description: Relevant HTTP status code
+          format: int32
+    GramaDivision:
+      required:
+      - DS_division
+      - GN_division
+      - district
+      - id
+      - province
+      type: object
+      properties:
+        id:
+          type: string
+        province:
+          type: string
+        district:
+          type: string
+        DS_division:
+          type: string
+        GN_division:
+          type: string
+    UpdateStatusRequest:
+      required:
+      - grama_nic
+      - request_id
+      - status
+      type: object
+      properties:
+        grama_nic:
+          type: string
+        request_id:
+          type: string
+        status:
+          type: string
+    Utc:
+      type: array
+      items:
+        oneOf:
+        - type: integer
+          format: int64
+        - type: number
+          format: double
+    NewAddressRequest:
+      required:
+      - NIC
+      - address
+      - gramaDivision
+      type: object
+      properties:
+        address:
+          type: string
+        NIC:
+          type: string
+        gramaDivision:
+          type: string
+    AddressRequest:
+      required:
+      - NIC
+      - address
+      - applied_date
+      - approved_by
+      - gramadivisionId
+      - id
+      - status
+      type: object
+      properties:
+        id:
+          type: string
+        address:
+          type: string
+        NIC:
+          type: string
+        applied_date:
+          $ref: '#/components/schemas/Utc'
+        approved_by:
+          type: string
+        gramadivisionId:
+          type: string
+        status:
+          type: string
