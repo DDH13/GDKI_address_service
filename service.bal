@@ -41,14 +41,6 @@ isolated function changeRequestStatus(string request_id, string status, string g
 }
 
 isolated function getRequests(int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
-    // AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
-    //     select request;
-    // if requests is error {
-    //     log:printError("Error while retrieving requests from the database", 'error = requests);
-    //     return requests;
-    // } else {
-    //     return requests;
-    // }
     sql:ParameterizedQuery query = `SELECT * FROM AddressRequest ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
     stream<AddressRequest, sql:Error?> resultStream = mysqldbClient->query(query);
     AddressRequest[] requests = [];
@@ -78,15 +70,6 @@ isolated function deleteRequest(string id) returns ()|error {
 }
 
 isolated function getRequestsByGramaDivision(string grama_division_id, int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
-    // AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
-    //     where request.gramadivisionId == grama_division_id
-    //     select request;
-    // if requests is error {
-    //     log:printError("Error while retrieving requests from the database", 'error = requests);
-    //     return requests;
-    // } else {
-    //     return requests;
-    // }
     sql:ParameterizedQuery query = `SELECT * FROM AddressRequest WHERE gramadivisionId = ${grama_division_id} ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
     stream<AddressRequest, sql:Error?> resultStream = mysqldbClient->query(query);
     AddressRequest[] requests = [];
@@ -99,15 +82,6 @@ isolated function getRequestsByGramaDivision(string grama_division_id, int rlimi
 }
 
 isolated function getRequestsByStatus(string status, int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
-    // AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
-    //     where request.status == status
-    //     select request;
-    // if requests is error {
-    //     log:printError("Error while retrieving requests from the database", 'error = requests);
-    //     return requests;
-    // } else {
-    //     return requests;
-    // }
     sql:ParameterizedQuery query = `SELECT * FROM AddressRequest WHERE status = ${status} ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
     stream<AddressRequest, sql:Error?> resultStream = mysqldbClient->query(query);
     AddressRequest[] requests = [];
@@ -120,16 +94,6 @@ isolated function getRequestsByStatus(string status, int rlimit = 10000, int off
 }
 
 isolated function getRequestsByStatusAndGramaDivision(string status, string grama_division_id, int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
-    // AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
-    //     where request.status == status
-    //     where request.gramadivisionId == grama_division_id
-    //     select request;
-    // if requests is error {
-    //     log:printError("Error while retrieving requests from the database", 'error = requests);
-    //     return requests;
-    // } else {
-    //     return requests;
-    // }
     sql:ParameterizedQuery query = `SELECT * FROM AddressRequest WHERE status = ${status} AND gramadivisionId = ${grama_division_id} ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
     stream<AddressRequest, sql:Error?> resultStream = mysqldbClient->query(query);
     AddressRequest[] requests = [];
