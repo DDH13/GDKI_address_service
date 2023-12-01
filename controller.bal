@@ -26,18 +26,18 @@ string errmsg;
 |};
 
 service /address on new http:Listener(8082){
-    isolated resource function get requests(string gdid="", string status="", int rlimit = -1, int offset = -1) returns AddressRequest[]|error {
+    isolated resource function get requests(string gdid="", string status="", int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
         if (gdid != "" && status != "") {
-            return getRequestsByStatusAndGramaDivision(status, gdid);
+            return getRequestsByStatusAndGramaDivision(status, gdid, rlimit, offset);
         }
         else if (status != "") {
-            return getRequestsByStatus(status);
+            return getRequestsByStatus(status, rlimit, offset);
         }
         else if (gdid != "") {
-            return getRequestsByGramaDivision(gdid);
+            return getRequestsByGramaDivision(gdid, rlimit, offset);
         }
         else {
-            return getRequests();
+            return getRequests(rlimit, offset);
         }
     }
 
