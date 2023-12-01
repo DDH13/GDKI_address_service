@@ -1,9 +1,11 @@
+import ballerina/http;
 import ballerina/log;
+import ballerina/persist;
+import ballerina/sql;
 import ballerina/time;
 import ballerina/uuid;
+import ballerinax/mysql;
 import ballerinax/mysql.driver as _;
-import ballerina/persist;
-import ballerina/http;
 
 isolated function addRequest(NewAddressRequest newrequest) returns AddressRequest|error {
     //check if gramasevaka division exists
@@ -20,7 +22,7 @@ isolated function addRequest(NewAddressRequest newrequest) returns AddressReques
         applied_date: time:utcNow(),
         status: "Pending",
         approved_by: ""
-        };
+    };
 
     string[]|error added = dbclient->/addressrequests.post([request]);
     if (added is error) {
@@ -38,15 +40,24 @@ isolated function changeRequestStatus(string request_id, string status, string g
     return ();
 }
 
-isolated function getRequests() returns AddressRequest[]|error {
-    AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
-        select request;
-    if requests is error {
-        log:printError("Error while retrieving requests from the database", 'error = requests);
-        return requests;
-    } else {
-        return requests;
-    }
+isolated function getRequests(int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
+    // AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
+    //     select request;
+    // if requests is error {
+    //     log:printError("Error while retrieving requests from the database", 'error = requests);
+    //     return requests;
+    // } else {
+    //     return requests;
+    // }
+    sql:ParameterizedQuery query = `SELECT * FROM AddressRequest ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
+    stream<AddressRequest, sql:Error?> resultStream = mysqldbClient->query(query);
+    AddressRequest[] requests = [];
+    check from AddressRequest request in resultStream
+        do {
+            requests.push(request);
+        };
+    check resultStream.close();
+    return requests;
 }
 
 isolated function getRequest(string id) returns AddressRequest|error {
@@ -66,41 +77,68 @@ isolated function deleteRequest(string id) returns ()|error {
     return ();
 }
 
-isolated function getRequestsByGramaDivision(string grama_division_id) returns AddressRequest[]|error {
-    AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
-        where request.gramadivisionId == grama_division_id
-        select request;
-    if requests is error {
-        log:printError("Error while retrieving requests from the database", 'error = requests);
-        return requests;
-    } else {
-        return requests;
-    }
+isolated function getRequestsByGramaDivision(string grama_division_id, int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
+    // AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
+    //     where request.gramadivisionId == grama_division_id
+    //     select request;
+    // if requests is error {
+    //     log:printError("Error while retrieving requests from the database", 'error = requests);
+    //     return requests;
+    // } else {
+    //     return requests;
+    // }
+    sql:ParameterizedQuery query = `SELECT * FROM AddressRequest WHERE gramadivisionId = ${grama_division_id} ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
+    stream<AddressRequest, sql:Error?> resultStream = mysqldbClient->query(query);
+    AddressRequest[] requests = [];
+    check from AddressRequest request in resultStream
+        do {
+            requests.push(request);
+        };
+    check resultStream.close();
+    return requests;
 }
 
-isolated function getRequestsByStatus(string status) returns AddressRequest[]|error {
-    AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
-        where request.status == status
-        select request;
-    if requests is error {
-        log:printError("Error while retrieving requests from the database", 'error = requests);
-        return requests;
-    } else {
-        return requests;
-    }
+isolated function getRequestsByStatus(string status, int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
+    // AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
+    //     where request.status == status
+    //     select request;
+    // if requests is error {
+    //     log:printError("Error while retrieving requests from the database", 'error = requests);
+    //     return requests;
+    // } else {
+    //     return requests;
+    // }
+    sql:ParameterizedQuery query = `SELECT * FROM AddressRequest WHERE status = ${status} ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
+    stream<AddressRequest, sql:Error?> resultStream = mysqldbClient->query(query);
+    AddressRequest[] requests = [];
+    check from AddressRequest request in resultStream
+        do {
+            requests.push(request);
+        };
+    check resultStream.close();
+    return requests;
 }
 
-isolated function getRequestsByStatusAndGramaDivision(string status, string grama_division_id) returns AddressRequest[]|error {
-    AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
-        where request.status == status
-        where request.gramadivisionId == grama_division_id
-        select request;
-    if requests is error {
-        log:printError("Error while retrieving requests from the database", 'error = requests);
-        return requests;
-    } else {
-        return requests;
-    }
+isolated function getRequestsByStatusAndGramaDivision(string status, string grama_division_id, int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
+    // AddressRequest[]|error requests = from var request in dbclient->/addressrequests(targetType = AddressRequest)
+    //     where request.status == status
+    //     where request.gramadivisionId == grama_division_id
+    //     select request;
+    // if requests is error {
+    //     log:printError("Error while retrieving requests from the database", 'error = requests);
+    //     return requests;
+    // } else {
+    //     return requests;
+    // }
+    sql:ParameterizedQuery query = `SELECT * FROM AddressRequest WHERE status = ${status} AND gramadivisionId = ${grama_division_id} ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
+    stream<AddressRequest, sql:Error?> resultStream = mysqldbClient->query(query);
+    AddressRequest[] requests = [];
+    check from AddressRequest request in resultStream
+        do {
+            requests.push(request);
+        };
+    check resultStream.close();
+    return requests;
 }
 
 isolated function getRequestsByNIC(string nic) returns AddressRequest[]|error {
@@ -129,7 +167,7 @@ isolated function checkAddressRequestIsValid(AddressRequest request) returns boo
 isolated function checkDateIsLessThanSixMonthsFromNow(time:Utc date) returns boolean|error {
     time:Utc now = time:utcNow();
     time:Utc six_months_ago = time:utcAddSeconds(now, -15768000);
-    if (date<six_months_ago) {
+    if (date < six_months_ago) {
         return false;
     }
     return true;
@@ -141,25 +179,24 @@ isolated function checkCitizenHasValidAddressRequests(string nic) returns boolea
         return false;
     }
     foreach var request in requests {
-        boolean valid =check checkAddressRequestIsValid(request);
+        boolean valid = check checkAddressRequestIsValid(request);
         if (valid) {
             return true;
         }
     }
     return false;
 }
-isolated function checkCitizenHasValidIdentityRequests(string nic) returns boolean|error{
+
+isolated function checkCitizenHasValidIdentityRequests(string nic) returns boolean|error {
     string url = identity_url + "/identity/requests/validate/" + nic;
-    http:Client NewClient = check new(url);
-    boolean |error response = check NewClient->/.get();
+    http:Client NewClient = check new (url);
+    boolean|error response = check NewClient->/.get();
     if (response is error) {
         return false;
     }
     return response;
 
-
 }
-
 
 isolated function getGramaDivision(string id) returns GramaDivision|error {
     GramaDivision|error grama_division = dbclient->/gramadivisions/[id];
@@ -187,4 +224,57 @@ function initializeDbClient() returns Client|error {
 
 final Client dbclient = check initializeDbClient();
 configurable string identity_url = ?;
+final mysql:Client mysqldbClient = check new (
+    host = host, user = user, password = password, port = port, database = database
+);
 
+// ////////////////////////////////////
+
+// isolated function getRequests(int rlimit = 10000, int offset = 0) returns IdentityRequest[]|error {
+//     sql:ParameterizedQuery query = `SELECT * FROM IdentityRequest ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
+//     stream<IdentityRequest, sql:Error?> resultStream = mysqldbClient->query(query);
+//     IdentityRequest[] requests = [];
+//     check from IdentityRequest request in resultStream
+//         do {
+//             requests.push(request);
+//         };
+//     check resultStream.close();
+//     return requests;
+// }
+
+// isolated function getRequestsByGramaDivision(string grama_division_id, int rlimit = 10000, int offset = 0) returns IdentityRequest[]|error {
+//     sql:ParameterizedQuery query = `SELECT * FROM IdentityRequest WHERE grama_divisionId = ${grama_division_id} ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
+//     stream<IdentityRequest, sql:Error?> resultStream = mysqldbClient->query(query);
+//     IdentityRequest[] requests = [];
+//     check from IdentityRequest request in resultStream
+//         do {
+//             requests.push(request);
+//         };
+//     check resultStream.close();
+//     return requests;
+// }
+
+// isolated function getRequestsByStatus(string status, int rlimit = 10000, int offset = 0) returns IdentityRequest[]|error {
+//     sql:ParameterizedQuery query = `SELECT * FROM IdentityRequest WHERE status = ${status} ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
+//     stream<IdentityRequest, sql:Error?> resultStream = mysqldbClient->query(query);
+//     IdentityRequest[] requests = [];
+//     check from IdentityRequest request in resultStream
+//         do {
+//             requests.push(request);
+//         };
+//     check resultStream.close();
+//     return requests;
+// }
+
+// isolated function getRequestsByStatusAndGramaDivision(string status, string grama_division_id, int rlimit = 10000, int offset = 0) returns IdentityRequest[]|error {
+//     sql:ParameterizedQuery query = `SELECT * FROM IdentityRequest WHERE status = ${status} AND grama_divisionId = ${grama_division_id} ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
+//     stream<IdentityRequest, sql:Error?> resultStream = mysqldbClient->query(query);
+//     IdentityRequest[] requests = [];
+//     check from IdentityRequest request in resultStream
+//         do {
+//             requests.push(request);
+//         };
+//     check resultStream.close();
+//     return requests;
+
+// }
