@@ -32,8 +32,8 @@ isolated function addRequest(NewAddressRequest newrequest) returns AddressReques
     return request;
 }
 
-isolated function changeRequestStatus(string request_id, string status, string grama_id) returns ()|error {
-    AddressRequest|error updated = dbclient->/addressrequests/[request_id].put({status: status, approved_by: grama_id});
+isolated function changeRequestStatus(string request_id, string status, string grama_name) returns ()|error {
+    AddressRequest|error updated = dbclient->/addressrequests/[request_id].put({status: status, approved_by: grama_name});
     if (updated is error) {
         return updated;
     }

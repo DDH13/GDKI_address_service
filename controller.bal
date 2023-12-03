@@ -6,7 +6,7 @@ public type NewAddressRequest record {
 };
 
 public type UpdateStatusRequest record {
-    string grama_nic;
+    string grama_name;
     string request_id;
     string status;
 };
@@ -63,7 +63,7 @@ service /address on new http:Listener(8082){
     }
 
     isolated resource function put requests(UpdateStatusRequest request) returns string|error {
-        error? changeRequestStatusResult = changeRequestStatus(request.request_id, request.status, request.grama_nic);
+        error? changeRequestStatusResult = changeRequestStatus(request.request_id, request.status, request.grama_name);
         if changeRequestStatusResult is error {
             return changeRequestStatusResult;
         }
