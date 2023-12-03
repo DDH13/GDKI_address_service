@@ -44,6 +44,9 @@ service /address on new http:Listener(8082){
     isolated resource function get requests/[string id]() returns AddressRequest|error {
         return getRequest(id);
     }
+    isolated resource function get requests/nic/[string nic]() returns AddressRequest[]|error {
+        return getRequestsByNIC(nic);
+    }
 
     isolated resource function post requests(NewAddressRequest request) returns AddressRequest|error {
         return addRequest(request);
@@ -75,8 +78,5 @@ service /address on new http:Listener(8082){
 
     isolated resource function get divisions() returns GramaDivision[]|error {
         return getGramaDivisions();
-    }
-    isolated resource function get test/[string nic]() returns boolean|error {
-        return checkCitizenHasValidIdentityRequests(nic);
     }
 }
