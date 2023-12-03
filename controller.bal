@@ -25,6 +25,12 @@ public type ErrorMsg record {|
 string errmsg;
 |};
 
+@http:ServiceConfig {
+    cors: {
+       allowOrigins: ["*"]
+    }
+}
+
 service /address on new http:Listener(8082){
     isolated resource function get requests(string gdid="", string status="", int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
         if (gdid != "" && status != "") {
