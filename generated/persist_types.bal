@@ -9,6 +9,7 @@ public type AddressRequest record {|
     string NIC;
     time:Utc applied_date;
     string approved_by;
+    time:Utc approved_date;
     string gramadivisionId;
     string status;
 |};
@@ -19,6 +20,7 @@ public type AddressRequestOptionalized record {|
     string NIC?;
     time:Utc applied_date?;
     string approved_by?;
+    time:Utc approved_date?;
     string gramadivisionId?;
     string status?;
 |};
@@ -37,6 +39,7 @@ public type AddressRequestUpdate record {|
     string NIC?;
     time:Utc applied_date?;
     string approved_by?;
+    time:Utc approved_date?;
     string gramadivisionId?;
     string status?;
 |};

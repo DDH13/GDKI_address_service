@@ -21,6 +21,7 @@ CREATE TABLE `AddressRequest` (
 	`NIC` VARCHAR(191) NOT NULL,
 	`applied_date` TIMESTAMP NOT NULL,
 	`approved_by` VARCHAR(191) NOT NULL,
+	`approved_date` TIMESTAMP NOT NULL,
 	`status` VARCHAR(191) NOT NULL,
 	`gramadivisionId` VARCHAR(191) NOT NULL,
 	FOREIGN KEY(`gramadivisionId`) REFERENCES `GramaDivision`(`id`),
