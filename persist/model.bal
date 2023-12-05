@@ -6,6 +6,7 @@ public type AddressRequest record {|
     string address;
     string NIC;
     time:Utc applied_date;
+    time:Utc approved_date;
     string approved_by;
     GramaDivision gramaDivision;
     string status;

@@ -27,6 +27,7 @@ public isolated client class Client {
                 address: {columnName: "address"},
                 NIC: {columnName: "NIC"},
                 applied_date: {columnName: "applied_date"},
+                approved_date: {columnName: "approved_date"},
                 approved_by: {columnName: "approved_by"},
                 gramadivisionId: {columnName: "gramadivisionId"},
                 status: {columnName: "status"},
@@ -52,6 +53,7 @@ public isolated client class Client {
                 "addressRequests[].address": {relation: {entityName: "addressRequests", refField: "address"}},
                 "addressRequests[].NIC": {relation: {entityName: "addressRequests", refField: "NIC"}},
                 "addressRequests[].applied_date": {relation: {entityName: "addressRequests", refField: "applied_date"}},
+                "addressRequests[].approved_date": {relation: {entityName: "addressRequests", refField: "approved_date"}},
                 "addressRequests[].approved_by": {relation: {entityName: "addressRequests", refField: "approved_by"}},
                 "addressRequests[].gramadivisionId": {relation: {entityName: "addressRequests", refField: "gramadivisionId"}},
                 "addressRequests[].status": {relation: {entityName: "addressRequests", refField: "status"}}

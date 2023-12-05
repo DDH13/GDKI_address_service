@@ -22,7 +22,8 @@ isolated function addRequest(NewAddressRequest newrequest) returns AddressReques
         gramadivisionId: newrequest.gramaDivision,
         applied_date: time:utcNow(),
         status: "Pending",
-        approved_by: ""
+        approved_by: "",
+        approved_date: time:utcNow()
     };
 
     string[]|error added = dbclient->/addressrequests.post([request]);
@@ -34,7 +35,7 @@ isolated function addRequest(NewAddressRequest newrequest) returns AddressReques
 }
 
 isolated function changeRequestStatus(string request_id, string status, string grama_name, vs:Client vsClient) returns ()|error {
-    AddressRequest|error updated = dbclient->/addressrequests/[request_id].put({status: status, approved_by: grama_name});
+    AddressRequest|error updated = dbclient->/addressrequests/[request_id].put({status: status, approved_by: grama_name, approved_date: time:utcNow()});
     if (updated is error) {
         return updated;
     }

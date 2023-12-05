@@ -20,6 +20,7 @@ CREATE TABLE `AddressRequest` (
 	`address` VARCHAR(191) NOT NULL,
 	`NIC` VARCHAR(191) NOT NULL,
 	`applied_date` TIMESTAMP NOT NULL,
+	`approved_date` TIMESTAMP NOT NULL,
 	`approved_by` VARCHAR(191) NOT NULL,
 	`status` VARCHAR(191) NOT NULL,
 	`gramadivisionId` VARCHAR(191) NOT NULL,
