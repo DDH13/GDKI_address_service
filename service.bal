@@ -1,4 +1,6 @@
 import ballerina/http;
+import ballerinax/vonage.sms as vs;
+
 public type NewAddressRequest record {
     string address;
     string NIC;
@@ -63,7 +65,9 @@ service /address on new http:Listener(8082){
     }
 
     isolated resource function put requests(UpdateStatusRequest request) returns string|error {
-        error? changeRequestStatusResult = changeRequestStatus(request.request_id, request.status, request.grama_name);
+        vs:Client vsClient = check getVsClient();
+
+        error? changeRequestStatusResult = changeRequestStatus(request.request_id, request.status, request.grama_name, vsClient);
         if changeRequestStatusResult is error {
             return changeRequestStatusResult;
         }
