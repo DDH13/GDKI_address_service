@@ -29,11 +29,13 @@ paths:
         schema:
           type: integer
           format: int64
+          default: 10000
       - name: offset
         in: query
         schema:
           type: integer
           format: int64
+          default: 0
       responses:
         "200":
           description: Ok
@@ -132,6 +134,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorPayload'
+  /requests/nic/{nic}:
+    get:
+      operationId: getRequestsNicNic
+      parameters:
+      - name: nic
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressRequest'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /requests/latest/{nic}:
+    get:
+      operationId: getRequestsLatestNic
+      parameters:
+      - name: nic
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressRequest'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
   /requests/validate/{nic}:
     get:
       operationId: getRequestsValidateNic
@@ -166,28 +214,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/GramaDivision'
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorPayload'
-  /test/{nic}:
-    get:
-      operationId: getTestNic
-      parameters:
-      - name: nic
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                type: boolean
         "500":
           description: Internal server error
           content:
@@ -239,12 +265,12 @@ components:
           type: string
     UpdateStatusRequest:
       required:
-      - grama_nic
+      - grama_name
       - request_id
       - status
       type: object
       properties:
-        grama_nic:
+        grama_name:
           type: string
         request_id:
           type: string
@@ -277,6 +303,7 @@ components:
       - address
       - applied_date
       - approved_by
+      - approved_date
       - gramadivisionId
       - id
       - status
@@ -292,6 +319,8 @@ components:
           $ref: '#/components/schemas/Utc'
         approved_by:
           type: string
+        approved_date:
+          $ref: '#/components/schemas/Utc'
         gramadivisionId:
           type: string
         status:
