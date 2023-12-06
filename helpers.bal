@@ -73,6 +73,30 @@ isolated function deleteRequest(string id) returns ()|error {
     return ();
 }
 
+isolated function checkRequestIsValid(AddressRequest request) returns boolean|error {
+    if (request.status == "Rejected" || request.status == "Pending") {
+        return false;
+    }
+    boolean valid_date = check checkDateIsLessThanSixMonthsFromNow(request.applied_date);
+    if (!valid_date) {
+        return false;
+    }
+    return true;
+}
+isolated function getLatestApprovedRequest(string nic) returns AddressRequest|error {
+    sql:ParameterizedQuery query = `SELECT * FROM AddressRequest WHERE NIC = ${nic} AND status = 'Verified' ORDER BY applied_date DESC LIMIT 1`;
+    stream<AddressRequest, sql:Error?> resultStream = mysqldbClient->query(query);
+    AddressRequest[] requests = [];
+    check from AddressRequest request in resultStream
+        do {
+            requests.push(request);
+        };
+    check resultStream.close();
+    if (requests.length() == 0 || !(check checkRequestIsValid(requests[0]))) {
+        return error ("No approved requests found for the given NIC");
+    }
+    return requests[0];
+}
 isolated function getRequestsByGramaDivision(string grama_division_id, int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
     sql:ParameterizedQuery query = `SELECT * FROM AddressRequest WHERE gramadivisionId = ${grama_division_id} ORDER BY applied_date DESC LIMIT ${rlimit} OFFSET ${offset}`;
     stream<AddressRequest, sql:Error?> resultStream = mysqldbClient->query(query);

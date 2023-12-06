@@ -14,27 +14,27 @@ public type UpdateStatusRequest record {
 };
 
 public type NotFoundError record {|
-*http:NotFound;
-ErrorMsg body;
+    *http:NotFound;
+    ErrorMsg body;
 |};
 
 public type BadRequestError record {|
-*http:BadRequest;
-ErrorMsg body;
+    *http:BadRequest;
+    ErrorMsg body;
 |};
 
 public type ErrorMsg record {|
-string errmsg;
+    string errmsg;
 |};
 
 @http:ServiceConfig {
     cors: {
-       allowOrigins: ["*"]
+        allowOrigins: ["*"]
     }
 }
 
-service /address on new http:Listener(8082){
-    isolated resource function get requests(string gdid="", string status="", int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
+service /address on new http:Listener(8082) {
+    isolated resource function get requests(string gdid = "", string status = "", int rlimit = 10000, int offset = 0) returns AddressRequest[]|error {
         if (gdid != "" && status != "") {
             return getRequestsByStatusAndGramaDivision(status, gdid, rlimit, offset);
         }
@@ -55,7 +55,9 @@ service /address on new http:Listener(8082){
     isolated resource function get requests/nic/[string nic]() returns AddressRequest[]|error {
         return getRequestsByNIC(nic);
     }
-
+    isolated resource function get requests/latest/[string nic]() returns AddressRequest|error {
+        return getLatestApprovedRequest(nic);
+    }
     isolated resource function post requests(NewAddressRequest request) returns AddressRequest|error {
         return addRequest(request);
     }
